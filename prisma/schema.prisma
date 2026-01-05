@@ -1,0 +1,148 @@
+// Prisma schema for MobilePay Recurring API
+// Database: PostgreSQL
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// Customer model
+model Customer {
+  id                String             @id @default(uuid())
+  stripeCustomerId  String?            @unique @map("stripe_customer_id")
+  email             String             @db.VarChar(255)
+  phone             String             @db.VarChar(20)
+  name              String             @db.VarChar(255)
+  createdAt         DateTime           @default(now()) @map("created_at")
+  updatedAt         DateTime           @updatedAt @map("updated_at")
+
+  // Relations
+  agreements        Agreement[]
+  subscriptions     SubscriptionSync[]
+
+  @@index([email])
+  @@index([stripeCustomerId])
+  @@map("customers")
+}
+
+// Agreement model
+model Agreement {
+  id                    String        @id @default(uuid())
+  customerId            String        @map("customer_id")
+  mobilepayAgreementId  String        @unique @map("mobilepay_agreement_id")
+  status                AgreementStatus
+  intervalUnit          IntervalUnit  @map("interval_unit")
+  intervalCount         Int           @map("interval_count")
+  amount                Int           // in øre (cents)
+  currency              String        @default("DKK") @db.VarChar(3)
+  productName           String        @map("product_name") @db.VarChar(255)
+  productDescription    String        @map("product_description") @db.Text
+  merchantAgreementUrl  String        @map("merchant_agreement_url") @db.Text
+  confirmationUrl       String?       @map("confirmation_url") @db.Text
+  createdAt             DateTime      @default(now()) @map("created_at")
+  updatedAt             DateTime      @updatedAt @map("updated_at")
+
+  // Relations
+  customer              Customer      @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  charges               Charge[]
+  subscriptions         SubscriptionSync[]
+
+  @@index([customerId])
+  @@index([status])
+  @@index([mobilepayAgreementId])
+  @@map("agreements")
+}
+
+// Charge model
+model Charge {
+  id                  String        @id @default(uuid())
+  agreementId         String        @map("agreement_id")
+  mobilepayChargeId   String        @unique @map("mobilepay_charge_id")
+  amount              Int           // in øre (cents)
+  currency            String        @default("DKK") @db.VarChar(3)
+  description         String        @db.VarChar(255)
+  dueDate             DateTime      @map("due_date") @db.Date
+  status              ChargeStatus
+  retryDays           Int           @default(5) @map("retry_days")
+  createdAt           DateTime      @default(now()) @map("created_at")
+  updatedAt           DateTime      @updatedAt @map("updated_at")
+
+  // Relations
+  agreement           Agreement     @relation(fields: [agreementId], references: [id], onDelete: Cascade)
+
+  @@index([agreementId])
+  @@index([status])
+  @@index([dueDate])
+  @@map("charges")
+}
+
+// Subscription Sync model (links to Stripe subscriptions)
+model SubscriptionSync {
+  id                    String              @id @default(uuid())
+  customerId            String              @map("customer_id")
+  agreementId           String?             @map("agreement_id")
+  stripeSubscriptionId  String?             @map("stripe_subscription_id")
+  paymentMethod         PaymentMethod       @map("payment_method")
+  planType              PlanType            @map("plan_type")
+  status                SubscriptionStatus
+  nextBillingDate       DateTime            @map("next_billing_date") @db.Date
+  createdAt             DateTime            @default(now()) @map("created_at")
+  updatedAt             DateTime            @updatedAt @map("updated_at")
+
+  // Relations
+  customer              Customer            @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  agreement             Agreement?          @relation(fields: [agreementId], references: [id], onDelete: SetNull)
+
+  @@index([customerId])
+  @@index([agreementId])
+  @@index([stripeSubscriptionId])
+  @@index([status])
+  @@index([nextBillingDate])
+  @@map("subscription_sync")
+}
+
+// Enums
+enum AgreementStatus {
+  pending
+  active
+  stopped
+  expired
+}
+
+enum ChargeStatus {
+  pending
+  due
+  reserved
+  charged
+  failed
+  cancelled
+  refunded
+}
+
+enum PaymentMethod {
+  stripe
+  mobilepay
+}
+
+enum PlanType {
+  monthly
+  semi_annual
+  annual
+}
+
+enum SubscriptionStatus {
+  active
+  cancelled
+  paused
+}
+
+enum IntervalUnit {
+  MONTH
+  YEAR
+  WEEK
+  DAY
+}

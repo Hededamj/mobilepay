@@ -1,0 +1,13 @@
+{
+  "permissions": {
+    "allow": [
+      "WebSearch",
+      "Bash(git init:*)",
+      "Bash(git add:*)",
+      "Bash(git commit -m \"$\\(cat <<''EOF''\nInitial setup: MobilePay Recurring API\n\n- Initialize Node.js + TypeScript project\n- Set up Prisma with PostgreSQL schema\n- Configure Bull queue for job scheduling\n- Implement core MobilePay services:\n  * Access Token Service \\(OAuth 2.0\\)\n  * Agreement Service \\(create, status, cancel\\)\n  * Charge Service \\(create, status, calculation\\)\n- Add configuration for database, queue, logger\n- Create TypeScript type definitions for MobilePay API\n- Set up ESLint, Prettier, and project structure\n\nDatabase models:\n- customers\n- agreements\n- charges\n- subscription_sync\n\nNext steps: Implement routes, scheduler, and webhook handlers\n\nGenerated with [Claude Code]\\(https://claude.com/claude-code\\)\n\nCo-Authored-By: Claude Sonnet 4.5 <noreply@anthropic.com>\nEOF\n\\)\")"
+    ]
+  },
+  "enabledPlugins": {
+    "frontend-design@claude-plugins-official": true
+  }
+}
