@@ -34,7 +34,22 @@ This service handles automatic recurring charges for monthly, semi-annual, and a
 - Redis (for Bull queue)
 - MobilePay test credentials (from portal.vippsmobilepay.com)
 
-## Installation
+## Quick Start
+
+### Deploy to Railway (Recommended)
+
+**For test/production deployment:**
+
+See detailed guide: **[DEPLOYMENT.md](DEPLOYMENT.md)**
+
+Quick steps:
+1. Create Railway account at https://railway.app
+2. Deploy from GitHub repo
+3. Add PostgreSQL + Redis
+4. Configure environment variables
+5. Done! Your API is live 🚀
+
+### Local Development
 
 1. Clone the repository:
 ```bash
@@ -52,30 +67,7 @@ npm install
 cp .env.example .env
 ```
 
-Edit `.env` with your configuration:
-```env
-# Server
-NODE_ENV=development
-PORT=3000
-
-# Database
-DATABASE_URL=postgresql://user:password@localhost:5432/mobilepay
-
-# Redis
-REDIS_URL=redis://localhost:6379
-
-# MobilePay API
-MOBILEPAY_ENV=test
-MOBILEPAY_BASE_URL=https://apitest.vipps.no
-MOBILEPAY_CLIENT_ID=your-client-id
-MOBILEPAY_CLIENT_SECRET=your-client-secret
-MOBILEPAY_SUBSCRIPTION_KEY=your-subscription-key
-MOBILEPAY_MERCHANT_SERIAL_NUMBER=your-merchant-number
-
-# URLs
-MERCHANT_AGREEMENT_URL=https://academy.familymind.dk/agreement-details
-MERCHANT_REDIRECT_URL=https://academy.familymind.dk/payment/callback
-```
+Edit `.env` with your configuration (see `.env.example` for all variables)
 
 4. Set up the database:
 ```bash
@@ -83,9 +75,7 @@ npm run prisma:migrate
 npm run prisma:generate
 ```
 
-## Development
-
-Start development server:
+5. Start development server:
 ```bash
 npm run dev
 ```
