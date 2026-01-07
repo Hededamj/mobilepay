@@ -62,6 +62,20 @@ FAMILYMIND_API_URL=https://academy.familymind.dk/api
 FAMILYMIND_API_KEY=your-shared-secret-key
 ```
 
+### New Zenler Integration (Course Platform):
+```
+NEW_ZENLER_API_KEY=your-api-key-from-newzenler
+NEW_ZENLER_ACCOUNT_NAME=your-subdomain
+NEW_ZENLER_ALL_COURSES_IDS=course-id-1,course-id-2,course-id-3
+```
+
+**How to get New Zenler credentials:**
+1. Log in to your New Zenler account
+2. Go to **Settings** → **API Keys**
+3. Create new API key or copy existing
+4. Account name is your subdomain (e.g., if your site is `yourname.newzenler.com`, use `yourname`)
+5. Get course IDs from course URLs or API
+
 ### Security:
 ```
 JWT_SECRET=your-strong-jwt-secret-here

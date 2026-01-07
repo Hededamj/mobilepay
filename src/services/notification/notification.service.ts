@@ -1,5 +1,6 @@
 import axios, { AxiosError } from 'axios';
 import logger from '../../config/logger';
+import newZenlerService from '../newzenler/newzenler.service';
 
 class NotificationService {
   private readonly familyMindApiUrl: string;
@@ -17,10 +18,40 @@ class NotificationService {
 
   /**
    * Notify FamilyMind when an agreement is cancelled
+   * Also removes customer access in New Zenler
    */
   async notifyAgreementCancelled(agreement: any): Promise<void> {
+    logger.info('Processing agreement cancellation', {
+      agreementId: agreement.id,
+      customerEmail: agreement.customer.email,
+    });
+
+    // 1. Remove customer access from New Zenler
+    try {
+      const removed = await newZenlerService.removeCustomerAccess(
+        agreement.customer.email
+      );
+
+      if (removed) {
+        logger.info('Customer access removed from New Zenler', {
+          email: agreement.customer.email,
+        });
+      } else {
+        logger.warn('Failed to remove customer access from New Zenler', {
+          email: agreement.customer.email,
+        });
+      }
+    } catch (error) {
+      logger.error('Error removing customer access from New Zenler', {
+        error,
+        email: agreement.customer.email,
+      });
+      // Continue despite error
+    }
+
+    // 2. Notify FamilyMind API (if configured)
     if (!this.isConfigured()) {
-      logger.warn('Notification skipped - API not configured');
+      logger.warn('FamilyMind API not configured - skipping notification');
       return;
     }
 
@@ -97,10 +128,56 @@ class NotificationService {
 
   /**
    * Notify FamilyMind when an agreement is activated
+   * Also enrolls customer in New Zenler
    */
   async notifyAgreementActivated(agreement: any): Promise<void> {
+    const planType = agreement.intervalUnit === 'MONTH' && agreement.intervalCount === 1
+      ? 'monthly'
+      : agreement.intervalUnit === 'MONTH' && agreement.intervalCount === 6
+      ? 'semi_annual'
+      : 'annual';
+
+    logger.info('Processing agreement activation', {
+      agreementId: agreement.id,
+      customerEmail: agreement.customer.email,
+      planType,
+    });
+
+    // 1. Enroll customer in New Zenler
+    try {
+      const nameParts = agreement.customer.name.split(' ');
+      const firstName = nameParts[0] || 'Unknown';
+      const lastName = nameParts.slice(1).join(' ') || 'User';
+
+      const enrolled = await newZenlerService.enrollCustomerToPlan(
+        agreement.customer.email,
+        firstName,
+        lastName,
+        planType,
+        agreement.customer.phone
+      );
+
+      if (enrolled) {
+        logger.info('Customer enrolled in New Zenler successfully', {
+          email: agreement.customer.email,
+          planType,
+        });
+      } else {
+        logger.warn('Failed to enroll customer in New Zenler', {
+          email: agreement.customer.email,
+        });
+      }
+    } catch (error) {
+      logger.error('Error enrolling customer in New Zenler', {
+        error,
+        email: agreement.customer.email,
+      });
+      // Continue despite error - we still want to notify FamilyMind
+    }
+
+    // 2. Notify FamilyMind API (if configured)
     if (!this.isConfigured()) {
-      logger.warn('Notification skipped - API not configured');
+      logger.warn('FamilyMind API not configured - skipping notification');
       return;
     }
 
@@ -114,11 +191,7 @@ class NotificationService {
         stripeCustomerId: agreement.customer.stripeCustomerId,
         amount: agreement.amount / 100, // Convert øre to DKK
         currency: agreement.currency,
-        planType: agreement.intervalUnit === 'MONTH' && agreement.intervalCount === 1
-          ? 'monthly'
-          : agreement.intervalUnit === 'MONTH' && agreement.intervalCount === 6
-          ? 'semi_annual'
-          : 'annual',
+        planType,
         timestamp: new Date().toISOString(),
       },
     };

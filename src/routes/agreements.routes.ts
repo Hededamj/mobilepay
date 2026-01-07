@@ -123,12 +123,29 @@ router.get(
         agreement.mobilepayAgreementId
       );
 
+      const oldStatus = agreement.status;
+      const newStatus = mobilePayStatus.status.toLowerCase();
+
       // Update status if changed
-      if (mobilePayStatus.status.toLowerCase() !== agreement.status) {
+      if (newStatus !== oldStatus) {
         await agreementService.updateAgreementStatus(
           agreement.id,
-          mobilePayStatus.status.toLowerCase() as any
+          newStatus as any
         );
+
+        // If agreement became active, trigger enrollment
+        if (oldStatus === 'pending' && newStatus === 'active') {
+          // Get full agreement with customer data
+          const fullAgreement = await prisma.agreement.findUnique({
+            where: { id: agreement.id },
+            include: { customer: true },
+          });
+
+          if (fullAgreement) {
+            // Trigger New Zenler enrollment and FamilyMind notification
+            await notificationService.notifyAgreementActivated(fullAgreement);
+          }
+        }
       }
     } catch (error) {
       // Continue with database status if API call fails
