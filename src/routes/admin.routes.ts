@@ -80,8 +80,8 @@ router.get(
  */
 router.post(
   '/charges/:id/retry',
-  asyncHandler(async (req: Request, res: Response) => {
-    const { id } = req.params;
+  asyncHandler(async (req: Request, res: Response): Promise<void> => {
+    const id = String(req.params.id);
 
     const charge = await prisma.charge.findUnique({
       where: { id },

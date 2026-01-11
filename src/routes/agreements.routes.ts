@@ -100,7 +100,7 @@ router.get(
   '/:id',
   authenticateApiKey,
   validateParams(Joi.object({ id: schemas.uuid })),
-  asyncHandler(async (req: Request, res: Response) => {
+  asyncHandler(async (req: Request, res: Response): Promise<void> => {
     const id = String(req.params.id);
 
     const agreement = await prisma.agreement.findUnique({
@@ -185,7 +185,7 @@ router.post(
   authenticateApiKey,
   validateParams(Joi.object({ id: schemas.uuid })),
   validateBody(schemas.cancelAgreement),
-  asyncHandler(async (req: Request, res: Response) => {
+  asyncHandler(async (req: Request, res: Response): Promise<void> => {
     const id = String(req.params.id);
 
     const agreement = await prisma.agreement.findUnique({
