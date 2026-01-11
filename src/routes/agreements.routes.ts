@@ -100,7 +100,7 @@ router.get(
   '/:id',
   authenticateApiKey,
   validateParams(Joi.object({ id: schemas.uuid })),
-  asyncHandler(async (req: Request, res: Response): Promise<void> => {
+  asyncHandler(async (req: Request, res: Response) => {
     const id = String(req.params.id);
 
     const agreement = await prisma.agreement.findUnique({
@@ -172,7 +172,7 @@ router.get(
       },
     };
 
-    res.json(response);
+    return res.json(response);
   })
 );
 
@@ -185,7 +185,7 @@ router.post(
   authenticateApiKey,
   validateParams(Joi.object({ id: schemas.uuid })),
   validateBody(schemas.cancelAgreement),
-  asyncHandler(async (req: Request, res: Response): Promise<void> => {
+  asyncHandler(async (req: Request, res: Response) => {
     const id = String(req.params.id);
 
     const agreement = await prisma.agreement.findUnique({
@@ -210,7 +210,7 @@ router.post(
       message: 'Agreement cancelled successfully',
     };
 
-    res.json(response);
+    return res.json(response);
   })
 );
 

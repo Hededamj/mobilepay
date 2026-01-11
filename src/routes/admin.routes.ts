@@ -80,7 +80,7 @@ router.get(
  */
 router.post(
   '/charges/:id/retry',
-  asyncHandler(async (req: Request, res: Response): Promise<void> => {
+  asyncHandler(async (req: Request, res: Response) => {
     const id = String(req.params.id);
 
     const charge = await prisma.charge.findUnique({
@@ -124,7 +124,7 @@ router.post(
       message: `New charge created: ${newCharge.mobilepayChargeId}`,
     };
 
-    res.json(response);
+    return res.json(response);
   })
 );
 
