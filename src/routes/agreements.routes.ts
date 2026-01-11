@@ -1,4 +1,5 @@
 import { Router, Request, Response } from 'express';
+import Joi from 'joi';
 import prisma from '../config/database';
 import agreementService from '../services/mobilepay/agreement.service';
 import notificationService from '../services/notification/notification.service';
@@ -252,8 +253,5 @@ router.get(
     res.json(response);
   })
 );
-
-// Import Joi for inline validation
-import Joi from 'joi';
 
 export default router;
