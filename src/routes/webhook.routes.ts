@@ -54,7 +54,7 @@ router.post(
     };
 
     // Return 200 OK immediately
-    res.status(200).json(response);
+    return res.status(200).json(response);
   })
 );
 
