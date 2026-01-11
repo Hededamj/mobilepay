@@ -9,7 +9,8 @@
       "Bash(git branch:*)",
       "Bash(git push:*)",
       "Bash(git commit -m \"$\\(cat <<''EOF''\nComplete Phase 3-4: Services, Routes, and Express App\n\nImplemented remaining services:\n- Charge Scheduler Service with daily cron job\n- Webhook Handler Service for all MobilePay events\n- Notification Service to communicate with FamilyMind\n\nCreated middleware:\n- Error handling middleware with async wrapper\n- Validation middleware using Joi schemas\n- Authentication middleware \\(API key + admin\\)\n\nImplemented REST API routes:\n- Agreements: create, get status, cancel, list by customer\n- Webhooks: receive and process MobilePay events\n- Admin: upcoming charges, retry failed, trigger scheduler, stats\n\nMain Express app:\n- Complete app setup with helmet, cors, rate limiting\n- Health check endpoint\n- Charge scheduler auto-start\n- Graceful shutdown handling\n\nNext steps: Testing, deployment, and integration with FamilyMind\n\nGenerated with [Claude Code]\\(https://claude.com/claude-code\\)\n\nCo-Authored-By: Claude Sonnet 4.5 <noreply@anthropic.com>\nEOF\n\\)\")",
-      "WebFetch(domain:www.newzenler.com)"
+      "WebFetch(domain:www.newzenler.com)",
+      "Bash(git commit:*)"
     ]
   },
   "enabledPlugins": {

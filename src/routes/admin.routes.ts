@@ -18,9 +18,8 @@ router.use(authenticateAdmin);
 router.get(
   '/charges/upcoming',
   asyncHandler(async (req: Request, res: Response) => {
-    const daysAhead = parseInt((req.query.days as string) || '7', 10);
+    const daysAhead = parseInt(String(req.query.days || '7'), 10);
 
-    const targetDate = new Date();
     const upcomingCharges = [];
 
     // Check each day for the next X days
@@ -48,6 +47,8 @@ router.get(
       });
 
       for (const subscription of subscriptions) {
+        if (!subscription.agreement) continue;
+
         // Calculate when charge will be created (X days before due date)
         const advanceDays = parseInt(process.env.CHARGE_ADVANCE_DAYS || '3', 10);
         const scheduledCreationDate = new Date(checkDate);
@@ -89,12 +90,12 @@ router.post(
       },
     });
 
-    if (!charge) {
+    if (!charge || !charge.agreement) {
       return res.status(404).json({
         success: false,
         error: {
           code: 'NOT_FOUND',
-          message: 'Charge not found',
+          message: 'Charge or agreement not found',
         },
       });
     }
@@ -133,7 +134,7 @@ router.post(
  */
 router.post(
   '/scheduler/trigger',
-  asyncHandler(async (req: Request, res: Response) => {
+  asyncHandler(async (_req: Request, res: Response) => {
     await chargeSchedulerService.triggerManually();
 
     res.json({
@@ -149,7 +150,7 @@ router.post(
  */
 router.get(
   '/stats',
-  asyncHandler(async (req: Request, res: Response) => {
+  asyncHandler(async (_req: Request, res: Response) => {
     const [
       totalCustomers,
       totalAgreements,

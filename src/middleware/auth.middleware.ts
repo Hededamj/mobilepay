@@ -5,7 +5,7 @@ import { ApiError } from './error.middleware';
  * Simple API key authentication middleware
  * For production, consider using JWT tokens
  */
-export const authenticateApiKey = (req: Request, res: Response, next: NextFunction): void => {
+export const authenticateApiKey = (req: Request, _res: Response, next: NextFunction): void => {
   const apiKey = req.headers['x-api-key'] as string;
   const validApiKey = process.env.FAMILYMIND_API_KEY;
 
@@ -26,7 +26,7 @@ export const authenticateApiKey = (req: Request, res: Response, next: NextFuncti
 /**
  * Admin authentication middleware (stricter)
  */
-export const authenticateAdmin = (req: Request, res: Response, next: NextFunction): void => {
+export const authenticateAdmin = (req: Request, _res: Response, next: NextFunction): void => {
   const apiKey = req.headers['x-api-key'] as string;
   const adminApiKey = process.env.JWT_SECRET; // Using JWT_SECRET as admin key for now
 

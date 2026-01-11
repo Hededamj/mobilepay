@@ -16,11 +16,11 @@ interface CreateUserParams {
   gdprConsent?: boolean;
 }
 
-interface EnrollUserParams {
-  userId: string;
-  courseId: string;
-  planId?: string;
-}
+// interface EnrollUserParams {
+//   userId: string;
+//   courseId: string;
+//   planId?: string;
+// }
 
 interface NewZenlerUser {
   id: string;
@@ -31,7 +31,6 @@ interface NewZenlerUser {
 
 class NewZenlerService {
   private config: NewZenlerConfig;
-  private readonly maxRetries: number = 3;
 
   constructor() {
     this.config = {
@@ -241,7 +240,7 @@ class NewZenlerService {
   /**
    * Get course IDs based on subscription plan type
    */
-  getCourseIdsForPlan(planType: 'monthly' | 'semi_annual' | 'annual'): string[] {
+  getCourseIdsForPlan(_planType: 'monthly' | 'semi_annual' | 'annual'): string[] {
     // These should be configured via environment variables
     const allCoursesEnv = process.env.NEW_ZENLER_ALL_COURSES_IDS || '';
 

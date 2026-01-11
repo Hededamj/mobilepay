@@ -6,7 +6,7 @@ import { ApiError } from './error.middleware';
  * Validate request body against Joi schema
  */
 export const validateBody = (schema: Joi.ObjectSchema) => {
-  return (req: Request, res: Response, next: NextFunction): void => {
+  return (req: Request, _res: Response, next: NextFunction): void => {
     const { error, value } = schema.validate(req.body, {
       abortEarly: false,
       stripUnknown: true,
@@ -31,7 +31,7 @@ export const validateBody = (schema: Joi.ObjectSchema) => {
  * Validate request params against Joi schema
  */
 export const validateParams = (schema: Joi.ObjectSchema) => {
-  return (req: Request, res: Response, next: NextFunction): void => {
+  return (req: Request, _res: Response, next: NextFunction): void => {
     const { error, value } = schema.validate(req.params, {
       abortEarly: false,
     });
@@ -55,7 +55,7 @@ export const validateParams = (schema: Joi.ObjectSchema) => {
  * Validate request query against Joi schema
  */
 export const validateQuery = (schema: Joi.ObjectSchema) => {
-  return (req: Request, res: Response, next: NextFunction): void => {
+  return (req: Request, _res: Response, next: NextFunction): void => {
     const { error, value } = schema.validate(req.query, {
       abortEarly: false,
       stripUnknown: true,

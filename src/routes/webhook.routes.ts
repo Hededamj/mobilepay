@@ -13,7 +13,7 @@ const router = Router();
  */
 router.post(
   '/',
-  asyncHandler(async (req: Request, res: Response) => {
+  asyncHandler(async (req: Request, res: Response): Promise<void> => {
     const event: WebhookEvent = req.body;
 
     // Log incoming webhook

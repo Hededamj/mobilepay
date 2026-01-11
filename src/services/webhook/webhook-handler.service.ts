@@ -1,6 +1,6 @@
 import prisma from '../../config/database';
 import logger from '../../config/logger';
-import { WebhookEvent, WebhookEventType } from '../../types/mobilepay.types';
+import { WebhookEvent } from '../../types/mobilepay.types';
 import agreementService from '../mobilepay/agreement.service';
 import notificationService from '../notification/notification.service';
 
@@ -165,7 +165,7 @@ class WebhookHandlerService {
     logger.info('Charge successful', { chargeId });
 
     // Update charge status to charged
-    const charge = await prisma.charge.updateMany({
+    await prisma.charge.updateMany({
       where: { mobilepayChargeId: chargeId },
       data: { status: 'charged' },
     });
@@ -246,7 +246,7 @@ class WebhookHandlerService {
   /**
    * Verify webhook signature (implement based on MobilePay documentation)
    */
-  verifyWebhookSignature(payload: string, signature: string): boolean {
+  verifyWebhookSignature(_payload: string, _signature: string): boolean {
     // TODO: Implement signature verification using webhook secret
     // For now, return true (implement properly in production)
     logger.warn('Webhook signature verification not implemented');
